@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="80dip"
         android:gravity="center_horizontal"
-        android:text="System Utility"
+        android:text="Initializing"
         android:textSize="25sp"
         android:textStyle="bold"></TextView>
 
