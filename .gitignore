@@ -37,4 +37,4 @@ local.properties
 ehthumbs.db
 Thumbs.db
 
-build.gradle
+/build.gradle

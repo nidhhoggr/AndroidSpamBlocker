@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.supraliminalsolutions.spamblocker.util.DataManager;
 import com.supraliminalsolutions.spamblocker.util.TuringAPI;
 
+import com.google.i18n.phonenumbers.*;
+
 import android.util.Log;
 
 import org.json.JSONException;
@@ -26,6 +28,8 @@ public class CallBlockerBroadcast extends BroadcastReceiver {
 
     private TelephonyManager m_telephonyManager;
     private ITelephony m_telephonyService;
+    private PhoneNumberUtil m_phoneNumberUtil;
+    private Phonenumber.PhoneNumber incomingPhoneNumber;
 
     private AudioManager m_audioManager;
     Context context;
@@ -48,13 +52,32 @@ public class CallBlockerBroadcast extends BroadcastReceiver {
     }
 
     class MyPhoneStateListener extends PhoneStateListener {
-        public void onCallStateChanged(int state, String incomingNumber) {
-            Toast.makeText(context, incomingNumber, Toast.LENGTH_LONG).show();
+        public void onCallStateChanged(int state, String rawIncomingNumber) {
+            Toast.makeText(context, rawIncomingNumber, Toast.LENGTH_LONG).show();
             switch (state) {
                 case TelephonyManager.CALL_STATE_RINGING:
-                    incomingNumber = incomingNumber.substring(incomingNumber.length() - 10, incomingNumber.length());
-                    Log.d("Incoming number:", incomingNumber);
-                    boolean isBlacklisted = DataManager.getInstance(context).isIncomingBlocked(incomingNumber);
+
+                    m_phoneNumberUtil = PhoneNumberUtil.getInstance();
+
+                    String parsedIncomingNumber;
+
+                    try {
+                        Phonenumber.PhoneNumber incomingPhoneNumber = m_phoneNumberUtil.parseAndKeepRawInput(rawIncomingNumber.subSequence(0, rawIncomingNumber.length()), "US");
+                        if (!m_phoneNumberUtil.isValidNumber(incomingPhoneNumber)) {
+                            throw new NumberParseException(NumberParseException.ErrorType.NOT_A_NUMBER, "not a valid phonenumber");
+                        }
+                        parsedIncomingNumber = m_phoneNumberUtil.format(incomingPhoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164).replace("+","");
+                        if (parsedIncomingNumber.length() < 10 || parsedIncomingNumber.length() > 11) {
+                            throw new NumberParseException(NumberParseException.ErrorType.NOT_A_NUMBER, "not a valid phonenumber between 10 and 11 chars " + parsedIncomingNumber);
+                        }
+                    } catch(NumberParseException e) {
+                        Log.d("Incoming number error:", e.toString());
+                        parsedIncomingNumber = rawIncomingNumber.substring(rawIncomingNumber.length() - 10, rawIncomingNumber.length());
+                    }
+
+                    Log.d("Incoming number:", rawIncomingNumber + " - " + parsedIncomingNumber);
+                    boolean isBlacklisted = DataManager.getInstance(context).isIncomingBlocked(parsedIncomingNumber);
+
                     if (isBlacklisted) // if incoming Number need to be blocked
                     {
                         m_audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
@@ -63,7 +86,7 @@ public class CallBlockerBroadcast extends BroadcastReceiver {
                     else {
                         boolean isRobotByPhoneNumber = false;
                         try {
-                            isRobotByPhoneNumber = TuringAPI.getInstance(context).isRobotByPhoneNumber(incomingNumber);
+                            isRobotByPhoneNumber = TuringAPI.getInstance(context).isRobotByPhoneNumber(rawIncomingNumber, parsedIncomingNumber);
                         } catch (IOException e) {
 
                         } catch (JSONException e) {
@@ -71,7 +94,7 @@ public class CallBlockerBroadcast extends BroadcastReceiver {
                         }
 
                         if (isRobotByPhoneNumber) {
-                            DataManager.getInstance(context).blacklistIncoming(incomingNumber);
+                            DataManager.getInstance(context).blacklistIncoming(parsedIncomingNumber);
                             m_audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
                             m_telephonyService.endCall();
                         }

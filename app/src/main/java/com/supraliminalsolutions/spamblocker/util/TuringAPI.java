@@ -31,9 +31,9 @@ public class TuringAPI {
         return instance;
     }
 
-    public Boolean isRobotByPhoneNumber(String incoming) throws JSONException, IOException {
+    public Boolean isRobotByPhoneNumber(String rawIncoming, String parsedIncoming) throws JSONException, IOException {
         Request request = new Request.Builder()
-                .url(url.concat(incoming))
+                .url(url.concat(parsedIncoming + "&raw_phone_number=" + rawIncoming))
                 .build();
 
         boolean isRobot = false;
@@ -44,7 +44,7 @@ public class TuringAPI {
 
             try {
                 JSONObject Jobject = new JSONObject(jsonData);
-                isRobot = Jobject.getInt("score") == 1;
+                isRobot = Jobject.getBoolean("is_spam");
             } catch (JSONException e) {
                 throw e;
             }
