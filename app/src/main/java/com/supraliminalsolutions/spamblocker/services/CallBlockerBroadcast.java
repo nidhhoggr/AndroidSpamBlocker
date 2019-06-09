@@ -34,18 +34,25 @@ public class CallBlockerBroadcast extends BroadcastReceiver {
     private AudioManager m_audioManager;
     Context context;
 
+    static MyPhoneStateListener phoneStateListener;
+
+    @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
-        m_telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         try {
-            Class c = null;
-            c = Class.forName(m_telephonyManager.getClass().getName());
-            Method m = null;
-            m = c.getDeclaredMethod("getITelephony");
-            m.setAccessible(true);
-            m_telephonyService = (ITelephony) m.invoke(m_telephonyManager);
-            m_audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-            m_telephonyManager.listen(new MyPhoneStateListener(), PhoneStateListener.LISTEN_CALL_STATE);
+            if (phoneStateListener == null) {
+                m_telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                Class c = null;
+                c = Class.forName(m_telephonyManager.getClass().getName());
+                Method m = null;
+                m = c.getDeclaredMethod("getITelephony");
+                m.setAccessible(true);
+                m_telephonyService = (ITelephony) m.invoke(m_telephonyManager);
+                m_audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                phoneStateListener = new MyPhoneStateListener();
+                m_telephonyManager.listen(phoneStateListener,
+                        android.telephony.PhoneStateListener.LISTEN_CALL_STATE);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
