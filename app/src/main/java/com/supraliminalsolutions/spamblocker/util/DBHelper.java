@@ -21,13 +21,8 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             db.execSQL("create table blklst_call( ph_no TEXT , ct TEXT)");
             db.execSQL("create table whitlist_call( ph_no TEXT , blk TEXT)");
-            db.execSQL("create table blklst_sms( ph_no TEXT , ct TEXT)");
-            db.execSQL("create table whitlist_sms( ph_no TEXT , blk TEXT)");
             db.execSQL("create table login( user TEXT , pas TEXT)");
-            db.execSQL("create table track_info( sim TEXT , hlp TXT,stat TEXT)");
             db.execSQL("create table actservice( ser TEXT , stat TEXT)");
-
-
         } catch (Exception e) {
 
         }

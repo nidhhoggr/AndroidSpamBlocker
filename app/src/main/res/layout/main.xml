@@ -1,27 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/delete_button"
-        android:layout_width="fill_parent"
-        android:layout_height="100dip"
-        android:onClick="traking"
-        android:text="@string/trk"></Button>
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="70dip"
+        android:text="@string/clbl"
+        android:textSize="40dip"></TextView>
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="fill_parent"
-        android:layout_height="100dip"
-        android:onClick="calbl"
-        android:text="@string/bl"></Button>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/delete_button"
+        android:layout_alignRight="@+id/delete_button"
+        android:layout_below="@+id/delete_button"
+        android:layout_marginTop="20dip"
+        android:onClick="whitelist"
+        android:text="Edit White List"></Button>
+
+
+    <ToggleButton
+        android:id="@+id/toggleButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/button2"
+        android:layout_alignTop="@+id/button2"
+        android:layout_toRightOf="@+id/button2"
+        android:onClick="setWhitelist"
+        android:text="ToggleButton"></ToggleButton>
+
+    <ToggleButton
+        android:id="@+id/toggleButton1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/delete_button"
+        android:layout_alignBottom="@+id/delete_button"
+        android:layout_toRightOf="@+id/delete_button"
+        android:onClick="setBlacklist"
+        android:text="ToggleButton"></ToggleButton>
 
     <Button
-        android:id="@+id/button3"
-        android:layout_width="fill_parent"
-        android:layout_height="100dip"
-        android:onClick="smsbl"
-        android:text="@string/sms"></Button>
-</LinearLayout>
+        android:id="@+id/delete_button"
+        android:layout_width="200dip"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="70dip"
+        android:width="200dip"
+        android:onClick="editblk"
+        android:text="Edit Black List"></Button>
+</RelativeLayout>
+   
+    

@@ -112,7 +112,6 @@ public class CallBlockerBroadcast extends BroadcastReceiver {
             }
         }
 
-
     }
 }
    
